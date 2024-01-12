@@ -1,6 +1,8 @@
 import random
 import re
 import warnings
+import qrcode
+from PIL import Image, ImageDraw, ImageFont
 from commands import CommandGenerator
 
 
@@ -95,8 +97,17 @@ if __name__ == "__main__":
                   "'2': Command without manipulation,\n" \
                   "'3': Command with manipulation,\n" \
                   "'4': Batch of three commands,\n" \
+                  "'0': Generate QR code,\n" \
                   "'q': Quit"
     print(user_prompt)
+    command = ""
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=30,
+        border=4,
+    )
+    last_input = '?'
     try:
         while True:
             # Read user input
@@ -105,10 +116,13 @@ if __name__ == "__main__":
             # Check user input
             if user_input == '1':
                 command = generator.generate_command_start(cmd_category="")
+                last_input = "1"
             elif user_input == '2':
                 command = generator.generate_command_start(cmd_category="people")
+                last_input = "2"
             elif user_input == '3':
                 command = generator.generate_command_start(cmd_category="objects")
+                last_input = "3"
             elif user_input == '4':
                 command_one = generator.generate_command_start(cmd_category="people")
                 command_two = generator.generate_command_start(cmd_category="objects")
@@ -117,8 +131,36 @@ if __name__ == "__main__":
                                 command_three[0].upper() + command_three[1:]]
                 random.shuffle(command_list)
                 command = command_list[0] + "\n" + command_list[1] + "\n" + command_list[2]
+                last_input = "4"
             elif user_input == 'q':
                 break
+            elif user_input == '0':
+                if last_input == '4':
+                    commands = command_list
+                else:
+                    commands = [command]
+                for c in commands:
+                    qr.clear()
+                    qr.add_data(c)
+                    qr.make(fit=True)
+
+                    img = qr.make_image(fill_color="black", back_color="white")
+                    # Create a drawing object
+                    draw = ImageDraw.Draw(img)
+
+                    # Load a font
+                    font = ImageFont.truetype("Arial.ttf", 30)
+
+                    # Calculate text size and position
+                    text_size = draw.textsize(c, font)
+                    if text_size[0] > img.size[0]:
+                        font = ImageFont.truetype("Arial.ttf", 15)
+                        text_size = draw.textsize(c, font)
+                    text_position = ((img.size[0] - text_size[0]) // 2, img.size[1] - text_size[1] - 10)
+
+                    # Draw text on the image
+                    draw.text(text_position, c, font=font, fill="black")
+                    img.show()
             else:
                 print(user_prompt)
                 continue
