@@ -3,7 +3,8 @@ import re
 import warnings
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
-from commands import CommandGenerator
+from gpsr_commands import CommandGenerator
+from egpsr_commands import EgpsrCommandGenerator
 
 
 def read_data(file_path):
@@ -93,10 +94,12 @@ if __name__ == "__main__":
 
     generator = CommandGenerator(names, location_names, placement_location_names, room_names, object_names,
                                  object_categories_plural, object_categories_singular)
+    egpsr_generator = EgpsrCommandGenerator(generator)
     user_prompt = "'1': Any command,\n" \
                   "'2': Command without manipulation,\n" \
                   "'3': Command with manipulation,\n" \
                   "'4': Batch of three commands,\n" \
+                  "'5': Generate EGPSR setup,\n" \
                   "'0': Generate QR code,\n" \
                   "'q': Quit"
     print(user_prompt)
@@ -132,6 +135,9 @@ if __name__ == "__main__":
                 random.shuffle(command_list)
                 command = command_list[0] + "\n" + command_list[1] + "\n" + command_list[2]
                 last_input = "4"
+            elif user_input == "5":
+                command = egpsr_generator.generate_setup()
+                last_input = "5"
             elif user_input == 'q':
                 break
             elif user_input == '0':
