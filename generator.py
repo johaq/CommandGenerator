@@ -78,7 +78,7 @@ if __name__ == "__main__":
     names_file_path = '../names/names.md'
     locations_file_path = '../maps/location_names.md'
     rooms_file_path = '../maps/room_names.md'
-    objects_file_path = '../objects/test.md'
+    objects_file_path = '../objects/objects.md'
 
     names_data = read_data(names_file_path)
     names = parse_names(names_data)
