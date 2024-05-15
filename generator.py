@@ -158,11 +158,11 @@ if __name__ == "__main__":
                     font = ImageFont.truetype("Arial.ttf", 30)
 
                     # Calculate text size and position
-                    text_size = draw.textsize(c, font)
-                    if text_size[0] > img.size[0]:
+                    _, _, text_width, text_height = draw.textbbox((0, 0), c, font=font)
+                    if text_width > img.size[0]:
                         font = ImageFont.truetype("Arial.ttf", 15)
-                        text_size = draw.textsize(c, font)
-                    text_position = ((img.size[0] - text_size[0]) // 2, img.size[1] - text_size[1] - 10)
+                        _, _, text_width, text_height = draw.textbbox((0, 0), c, font=font)
+                    text_position = ((img.size[0] - text_width) // 2, img.size[1] - text_height - 10)
 
                     # Draw text on the image
                     draw.text(text_position, c, font=font, fill="black")
